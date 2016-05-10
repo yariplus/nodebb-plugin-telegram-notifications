@@ -66,9 +66,6 @@ Telegram.init = function(params, callback) {
 
 function startBot()
 {
-	// For multiple instances servers!!
-	var port = nconf.get('port');
-	var mainPort = 4567; // Main instace port, only one instance can reply and parse commands!
 	// Prepare bot
 	db.getObject('telegrambot-token', function(err, t){
 		if(err || !t)
@@ -81,7 +78,7 @@ function startBot()
 		// Setup polling way
 		bot = new TelegramBot(token, {polling: true});
 
-		if(port == mainPort)
+		if(nconf.get('isPrimary') === 'true' && !nconf.get('jobsDisabled'))
 		{	// Only parse commands and reply on main instance!!
 			bot.on('text', function (msg) {
 				var chatId = msg.chat.id;
